@@ -20,6 +20,7 @@ import android.widget.Toast;
 public class LoginActivity extends AppCompatActivity {
 
     // TODO: Add member variables here: testing push to fork
+    // Testing GIT push again...Git keeps crediting my husband for my work!
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;

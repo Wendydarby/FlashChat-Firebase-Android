@@ -1,4 +1,4 @@
-package com.londonappbrewery.flashchatnewfirebase;
+package com.wendydarby.flashchatnewfirebase;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -14,13 +14,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class LoginActivity extends AppCompatActivity {
 
     // TODO: Add member variables here: testing push to fork
-    // Testing GIT push again...Git keeps crediting my husband for my work!
+    FirebaseAuth mAuth;
+
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -45,34 +49,66 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // TODO: Grab an instance of FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
 
     }
 
     // Executed when Sign in button pressed
     public void signInExistingUser(View v)   {
         // TODO: Call attemptLogin() here
+        attemptLogin();
 
     }
 
     // Executed when Register button pressed
     public void registerNewUser(View v) {
-        Intent intent = new Intent(this, com.londonappbrewery.flashchatnewfirebase.RegisterActivity.class);
+        Intent intent = new Intent(this, com.wendydarby.flashchatnewfirebase.RegisterActivity.class);
         finish();
         startActivity(intent);
     }
 
     // TODO: Complete the attemptLogin() method
     private void attemptLogin() {
-
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
 
         // TODO: Use FirebaseAuth to sign in with email & password
+        if (email.equals("") || password.equals("")){
+            return;
+        }else {
+            Toast.makeText(this, "Login in progress..", Toast.LENGTH_SHORT).show();
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    Log.d("FlashChat", "signInwithEmail() onComplete: " + task.isSuccessful());
 
+                    if (!task.isSuccessful()) {
+                        Log.d("FlashChat", "Problem signing in: " + task.getException());
+                        showErrorDialog("Problem signing in...");
+                    } else {
 
-
+                        Intent intent = new Intent(LoginActivity.this, MainChatActivity.class);
+                        finish();
+                        startActivity(intent);
+                    }
+                }
+            });
+        }
     }
 
-    // TODO: Show error on screen with an alert dialog
 
+
+
+    // TODO: Show error on screen with an alert dialog
+        private void showErrorDialog(String message){
+            //example of an anonymous builder pattern usage
+            new AlertDialog.Builder(this)
+                    .setTitle("Uh-oh")
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
 
 
 }
